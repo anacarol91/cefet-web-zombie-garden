@@ -65,6 +65,20 @@ router.get('/new/', function(req, res) {
 //   2. Redirecionar para a rota de listagem de pessoas
 //      - Em caso de sucesso do INSERT, colocar uma mensagem feliz
 //      - Em caso de erro do INSERT, colocar mensagem vermelhinha
+router.post('/', function(req, res) {
+  db.query('INSERT INTO person (name, alive, eatenBy)' +
+           'VALUES (' + db.escape(req.body.name) + ', false, NULL)',
+    function(err, result) {
+      if (err) {
+        req.flash('error', 'Erro desconhecido. Descrição: ' + err);
+      } else if (result.affectedRows !== 1) {
+        req.flash('error', 'Pessoa não adicionada');
+      } else {
+        req.flash('success', 'A pessoa foi criada');
+      }
+      res.redirect('/');
+  });
+});
 
 
 /* DELETE uma pessoa */
@@ -74,5 +88,17 @@ router.get('/new/', function(req, res) {
 //   2. Redirecionar para a rota de listagem de pessoas
 //      - Em caso de sucesso do INSERT, colocar uma mensagem feliz
 //      - Em caso de erro do INSERT, colocar mensagem vermelhinha
+router.delete('/:id', function(req, res) {
+  db.query('DELETE FROM person ' +
+           'WHERE person.id = ' + req.params.id,
+    function(err, result) {
+      if (err) {
+        req.flash('error', 'Erro desconhecido. Descrição: ' + err);
+      } else {
+        req.flash('success', 'A pessoa foi excluida');
+      }
+      res.redirect('/');
+  });
+});
 
 module.exports = router;
